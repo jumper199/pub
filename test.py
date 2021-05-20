@@ -7,14 +7,14 @@ def shell(reader, writer):
     ec2 = boto3.client('ec2')
     asg = boto3.client('autoscaling')
     instance_id = ec2_metadata.instance_id
-    writer.write('\r\nWould you like to play a game? ')
+    writer.write('\r\nThis is '+instance_id)
 
     response = asg.describe_auto_scaling_groups(
         AutoScalingGroupNames=[
             'CP_PoC_asg'
         ]
     )
-    desired=resp['AutoScalingGroups'][0]['DesiredCapacity']
+    desired=response['AutoScalingGroups'][0]['DesiredCapacity']
 
     response = asg.set_desired_capacity(
         AutoScalingGroupName='CP_PoC_asg',
