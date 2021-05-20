@@ -8,19 +8,18 @@ def shell(reader, writer):
     asg = boto3.client('autoscaling')
     instance_id = ec2_metadata.instance_id
     writer.write('\r\nWould you like to play a game? ')
-    response = asg.detach_instances(
-        InstanceIds=[
-            instance_id,
-        ],
-        AutoScalingGroupName='CP_PoC_asg',
-        ShouldDecrementDesiredCapacity=False
+
+    response = asg.describe_auto_scaling_groups(
+        AutoScalingGroupNames=[
+            'CP_PoC_asg'
+        ]
     )
-    response = asg.attach_instances(
-        InstanceIds=[
-            instance_id,
-        ],
+    desired=resp['AutoScalingGroups'][0]['DesiredCapacity']
+
+    response = asg.set_desired_capacity(
         AutoScalingGroupName='CP_PoC_asg',
-        #ShouldDecrementDesiredCapacity=True
+        DesiredCapacity=desired+1,
+        HonorCooldown=True
     )
     inp = yield from reader.read(1)
     if inp:
