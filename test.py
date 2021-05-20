@@ -4,7 +4,17 @@ from ec2_metadata import ec2_metadata
 
 @asyncio.coroutine
 def shell(reader, writer):
+    ec2 = boto3.client('ec2')
+    asg = boto3.client('autoscaling')
+    instance_id = ec2_metadata.instance_id
     writer.write('\r\nWould you like to play a game? ')
+    response = asg.attach_instances(
+        InstanceIds=[
+            instance_id,
+        ],
+        AutoScalingGroupName='CP_PoC_asg',
+        #ShouldDecrementDesiredCapacity=True
+    )
     inp = yield from reader.read(1)
     if inp:
         writer.echo(inp)
