@@ -8,6 +8,13 @@ def shell(reader, writer):
     asg = boto3.client('autoscaling')
     instance_id = ec2_metadata.instance_id
     writer.write('\r\nWould you like to play a game? ')
+    response = asg.detach_instances(
+        InstanceIds=[
+            instance_id,
+        ],
+        AutoScalingGroupName='CP_PoC_asg',
+        ShouldDecrementDesiredCapacity=False
+    )
     response = asg.attach_instances(
         InstanceIds=[
             instance_id,
